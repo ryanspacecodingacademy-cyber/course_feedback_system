@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen flex items-center justify-center font-sans">
+
+    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl border border-blue-100">
+        <h2 class="text-3xl font-bold text-blue-700 text-center mb-6">Course Feedback</h2>
+
+        <!-- Faculty Selection -->
+        <form method="get" class="mb-6">
+            <label class="block text-gray-700 font-medium mb-2">Faculty</label>
+            <select name="faculty" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                <option value="">--Select Faculty--</option>
+                {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}" {% if request.GET.faculty == faculty.id|stringformat:"s" %}selected{% endif %}>
+                        {{ faculty.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <!-- Department Selection -->
+        {% if departments %}
+        <form method="get" class="mb-6">
+            <input type="hidden" name="faculty" value="{{ request.GET.faculty }}">
+            <label class="block text-gray-700 font-medium mb-2">Department</label>
+            <select name="department" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                <option value="">--Select Department--</option>
+                {% for dept in departments %}
+                    <option value="{{ dept.id }}">{{ dept.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+        {% endif %}
+
+        <!-- Course Feedback Form -->
+        {% if courses %}
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Course</label>
+                <select name="course" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+                    {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Rating (1–5)</label>
+                <input type="number" name="rating" min="1" max="5" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            </div>
+
+            <div>
+                <label class="block text-gray-700 font-medium mb-2">Comment</label>
+                <textarea name="comment" placeholder="Enter feedback..." class="w-full border border-gray-300 rounded-lg px-4 py-3 h-24 focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none"></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all transform hover:scale-105">
+                Submit Feedback
+            </button>
+        </form>
+        {% endif %}
+
+        <p class="text-center text-sm text-gray-500 mt-8 italic">
+            Your voice matters — thank you for helping improve our courses 🌟
+        </p>
+    </div>
+
+</body>
+</html>

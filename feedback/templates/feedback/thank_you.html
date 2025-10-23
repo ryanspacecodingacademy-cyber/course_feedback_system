@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-blue-500 to-orange-400 min-h-screen flex items-center justify-center">
+
+    <div class="bg-white rounded-3xl shadow-xl p-10 max-w-md text-center animate-fadeIn">
+        <svg class="mx-auto mb-4 w-16 h-16 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">Thank You!</h1>
+        <p class="text-gray-600 mb-6">Your feedback has been successfully submitted. We appreciate your time and effort!</p>
+        <a href="/" class="inline-block px-6 py-3 bg-blue-500 text-white rounded-full font-semibold shadow-lg hover:bg-blue-600 transition">Submit Another Feedback</a>
+    </div>
+
+    <style>
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.7s ease-out forwards;
+        }
+    </style>
+</body>
+</html>
