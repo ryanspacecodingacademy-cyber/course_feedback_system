@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Feedbacks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+<div class="max-w-7xl mx-auto p-6">
+
+    <!-- Header -->
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Feedback Dashboard</h1>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <!-- Total Feedbacks -->
+        <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+            <div>
+                <h2 class="text-sm font-medium text-gray-500">Total Feedbacks</h2>
+                <p class="mt-1 text-2xl font-bold text-gray-800">{{ feedbacks|length }}</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 0a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2h6a2 2 0 012 2v10z"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Average Rating -->
+        <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+            <div>
+                <h2 class="text-sm font-medium text-gray-500">Average Rating</h2>
+                <p class="mt-1 text-2xl font-bold text-gray-800">
+                    {% if average_rating %}
+                        {{ average_rating|floatformat:1 }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M5 13l4 4L19 7"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Most Recent Feedback -->
+        <div class="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+            <div>
+                <h2 class="text-sm font-medium text-gray-500">Most Recent Feedback</h2>
+                <p class="mt-1 text-gray-800 text-sm">
+                    {% if recent_feedback %}
+                        {{ recent_feedback.comment|truncatewords:10 }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </p>
+            </div>
+            <div class="bg-yellow-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4l3 3"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="GET" class="mb-6 flex flex-wrap gap-4 items-center">
+        <select name="faculty" class="border rounded p-2 focus:ring-2 focus:ring-blue-500">
+            <option value="">All Faculties</option>
+            {% for faculty in faculties %}
+                <option value="{{ faculty.id }}" {% if request.GET.faculty == faculty.id|stringformat:"s" %}selected{% endif %}>{{ faculty.name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="department" class="border rounded p-2 focus:ring-2 focus:ring-blue-500">
+            <option value="">All Departments</option>
+            {% for dept in departments %}
+                <option value="{{ dept.id }}" {% if request.GET.department == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="course" class="border rounded p-2 focus:ring-2 focus:ring-blue-500">
+            <option value="">All Courses</option>
+            {% for course in courses %}
+                <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>{{ course.name }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="lecturer" class="border rounded p-2 focus:ring-2 focus:ring-blue-500">
+            <option value="">All Lecturers</option>
+            {% for lecturer in lecturers %}
+                <option value="{{ lecturer.id }}" {% if request.GET.lecturer == lecturer.id|stringformat:"s" %}selected{% endif %}>{{ lecturer.name }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Filter</button>
+    </form>
+
+    <!-- Feedback Table -->
+    <div class="overflow-x-auto rounded-lg shadow bg-white">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Faculty</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Department</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Course</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Lecturer</th>
+                    <th class="px-4 py-3 text-center text-sm font-medium text-gray-700">Rating</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Comment</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Submitted At</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for fb in feedbacks %}
+                <tr class="bg-white hover:bg-blue-50 transition-colors duration-200">
+                    <td class="px-4 py-3 text-sm font-medium text-gray-700">{% if fb.faculty %}{{ fb.faculty.name }}{% else %}N/A{% endif %}</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">{% if fb.department %}{{ fb.department.name }}{% else %}N/A{% endif %}</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">{% if fb.course %}{{ fb.course.name }}{% else %}N/A{% endif %}</td>
+                    <td class="px-4 py-3 text-sm text-gray-700">{% if fb.lecturer %}{{ fb.lecturer.name }}{% else %}N/A{% endif %}</td>
+                    <td class="px-4 py-3 text-sm text-center text-blue-600 font-semibold">{{ fb.rating|default_if_none:"N/A" }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-800 break-words">{{ fb.comment|truncatewords:15 }}</td>
+                    <td class="px-4 py-3 text-sm text-gray-500">{{ fb.submitted_at|date:"M d, Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-6 text-gray-400 font-medium">No feedbacks found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

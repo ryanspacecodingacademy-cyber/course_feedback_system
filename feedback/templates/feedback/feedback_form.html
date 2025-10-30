@@ -1,77 +1,98 @@
+<!-- feedback_form.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Feedback</title>
+    <title>Feedback Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen flex items-center justify-center font-sans">
+<body class="bg-gray-50 min-h-screen flex items-center justify-center font-sans">
 
-    <div class="bg-white shadow-xl rounded-2xl p-8 w-full max-w-xl border border-blue-100">
-        <h2 class="text-3xl font-bold text-blue-700 text-center mb-6">Course Feedback</h2>
+<div class="bg-white p-8 rounded shadow-md w-full max-w-lg">
+    <h1 class="text-2xl font-bold mb-6">Submit Anonymous Feedback</h1>
 
-        <!-- Faculty Selection -->
-        <form method="get" class="mb-6">
-            <label class="block text-gray-700 font-medium mb-2">Faculty</label>
-            <select name="faculty" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                <option value="">--Select Faculty--</option>
+    <form method="GET" id="filter-form" class="mb-6">
+        <div class="mb-4">
+            <label for="faculty" class="block font-semibold mb-1">Faculty</label>
+            <select name="faculty" id="faculty" class="w-full border rounded p-2">
+                <option value="">Select Faculty</option>
                 {% for faculty in faculties %}
-                    <option value="{{ faculty.id }}" {% if request.GET.faculty == faculty.id|stringformat:"s" %}selected{% endif %}>
-                        {{ faculty.name }}
-                    </option>
+                    <option value="{{ faculty.id }}" {% if faculty.id|stringformat:"s" == request.GET.faculty %}selected{% endif %}>{{ faculty.name }}</option>
                 {% endfor %}
             </select>
-        </form>
+        </div>
 
-        <!-- Department Selection -->
-        {% if departments %}
-        <form method="get" class="mb-6">
-            <input type="hidden" name="faculty" value="{{ request.GET.faculty }}">
-            <label class="block text-gray-700 font-medium mb-2">Department</label>
-            <select name="department" onchange="this.form.submit()" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                <option value="">--Select Department--</option>
-                {% for dept in departments %}
-                    <option value="{{ dept.id }}">{{ dept.name }}</option>
-                {% endfor %}
-            </select>
-        </form>
-        {% endif %}
-
-        <!-- Course Feedback Form -->
-        {% if courses %}
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
-            
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Course</label>
-                <select name="course" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                    {% for course in courses %}
-                        <option value="{{ course.id }}">{{ course.name }}</option>
+        <div class="mb-4">
+            <label for="department" class="block font-semibold mb-1">Department</label>
+            <select name="department" id="department" class="w-full border rounded p-2">
+                <option value="">Select Department</option>
+                {% if departments %}
+                    {% for department in departments %}
+                        <option value="{{ department.id }}" {% if department.id|stringformat:"s" == request.GET.department %}selected{% endif %}>{{ department.name }}</option>
                     {% endfor %}
-                </select>
-            </div>
+                {% endif %}
+            </select>
+        </div>
 
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Rating (1–5)</label>
-                <input type="number" name="rating" min="1" max="5" required class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none">
-            </div>
+        <div class="mb-4">
+            <label for="course" class="block font-semibold mb-1">Course</label>
+            <select name="course" id="course" class="w-full border rounded p-2">
+                <option value="">Select Course</option>
+                {% if courses %}
+                    {% for course in courses %}
+                        <option value="{{ course.id }}" {% if course.id|stringformat:"s" == request.GET.course %}selected{% endif %}>{{ course.name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
 
-            <div>
-                <label class="block text-gray-700 font-medium mb-2">Comment</label>
-                <textarea name="comment" placeholder="Enter feedback..." class="w-full border border-gray-300 rounded-lg px-4 py-3 h-24 focus:ring-2 focus:ring-blue-400 focus:outline-none resize-none"></textarea>
-            </div>
+        <div class="mb-4">
+            <label for="lecturer" class="block font-semibold mb-1">Lecturer</label>
+            <select name="lecturer" id="lecturer" class="w-full border rounded p-2">
+                <option value="">Select Lecturer</option>
+                {% if lecturers %}
+                    {% for lecturer in lecturers %}
+                        <option value="{{ lecturer.id }}" {% if lecturer.id|stringformat:"s" == request.GET.lecturer %}selected{% endif %}>{{ lecturer.name }}</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
 
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all transform hover:scale-105">
-                Submit Feedback
-            </button>
-        </form>
-        {% endif %}
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Load Options</button>
+    </form>
 
-        <p class="text-center text-sm text-gray-500 mt-8 italic">
-            Your voice matters — thank you for helping improve our courses 🌟
-        </p>
-    </div>
+    <!-- Anonymous Feedback Submission -->
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="course" value="{{ request.GET.course }}">
+        <input type="hidden" name="lecturer" value="{{ request.GET.lecturer }}">
+
+        <div class="mb-4">
+            <label for="rating" class="block font-semibold mb-1">Rating (1-5)</label>
+            <input type="number" name="rating" id="rating" min="1" max="5" class="w-full border rounded p-2" required>
+        </div>
+
+        <div class="mb-4">
+            <label for="comment" class="block font-semibold mb-1">Comment</label>
+            <textarea name="comment" id="comment" rows="4" class="w-full border rounded p-2" required></textarea>
+        </div>
+
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded w-full">Submit Feedback Anonymously</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('faculty').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+    document.getElementById('department').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+    document.getElementById('course').addEventListener('change', function() {
+        document.getElementById('filter-form').submit();
+    });
+</script>
 
 </body>
 </html>
